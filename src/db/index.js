@@ -31,8 +31,24 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.users = require("../models/users")(sequelize, DataTypes);
+db.orders = require("../models/orders")(sequelize, DataTypes);
+db.inventories = require("../models/inventory")(sequelize, DataTypes);
+db.reports = require("../models/reports")(sequelize, DataTypes);
+db.shipments = require("../models/shipments")(sequelize, DataTypes);
 
-db.sequelize.sync({ force: false }).then(() => {
+// one to many between users and orders
+db.users.hasMany(db.orders, { foreignKey: "userId" });
+db.orders.belongsTo(db.users, { foreignKey: "userId" });
+
+// one to many between orders and shipments
+db.orders.hasMany(db.shipments, { foreignKey: "orderId" });
+db.shipments.belongsTo(db.orders, { foreignKey: "orderId" });
+
+// one to many between users and reports
+db.users.hasMany(db.reports, { foreignKey: "generatedBy" });
+db.reports.belongsTo(db.users, { foreignKey: "generatedBy" });
+
+db.sequelize.sync({ force: true }).then(() => {
   console.log(" yes re-sync");
 });
 
