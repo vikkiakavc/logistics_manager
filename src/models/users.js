@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
   // class methods (preHooks)
   // changing name and password values before creating
   Users.beforeCreate(async (user, options) => {
-    user.name = user.username.trim();
+    user.name = user.name.trim();
     user.password = await bcrypt.hash(user.password.trim(), 8);
   });
 
