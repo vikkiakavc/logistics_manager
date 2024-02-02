@@ -16,48 +16,59 @@ const getStatusAnalysis = (shipments) => {
   };
 };
 
-const getDeliveryAnalysis = (shipments) => {
+const getDeliveryAnalysis = (shipments, decimalPlaces = 2) => {
   const totalShipments = shipments.length;
   const totalDelayedShipments = shipments.filter(
     (shipment) => shipment.status === "Delayed"
   ).length;
 
-  const averageDeliveryTime = calculateAverageDeliveryTime(shipments);
+  const averageDeliveryTimeInDays = calculateAverageDeliveryTime(shipments);
+
   const delayedPercentage = (totalDelayedShipments / totalShipments) * 100;
 
   return {
-    averageDeliveryTime: averageDeliveryTime,
+    averageDeliveryTimeInDays: Math.round(averageDeliveryTimeInDays),
     delayedPercentage: delayedPercentage,
   };
 };
 
 const calculateAverageDeliveryTime = (shipments) => {
-  const totalDeliveryTime = shipments.reduce((sum, shipment) => {
+  const totalDeliveryTimeInMilliseconds = shipments.reduce((sum, shipment) => {
     const deliveryTime = shipment.expectedDelivery - shipment.shipmentDate;
     return sum + deliveryTime;
   }, 0);
 
-  return totalDeliveryTime / shipments.length;
+  const averageDeliveryTimeInMilliseconds =
+    totalDeliveryTimeInMilliseconds / shipments.length;
+
+  // Convert milliseconds to days (1 day = 24 * 60 * 60 * 1000 milliseconds)
+  const averageDeliveryTimeInDays =
+    averageDeliveryTimeInMilliseconds / (24 * 60 * 60 * 1000);
+
+  return averageDeliveryTimeInDays;
 };
 
-// const calculateGeographicalDistribution = (shipments) => {
-//   const distributionByRegion = shipments.reduce((result, shipment) => {
-//     const region = shipment.destination || "Unknown Region";
-//     result[region] = (result[region] || 0) + 1;
-//     return result;
-//   }, {});
+const calculateGeographicalDistribution = (shipments) => {
+  const distributionByRegion = shipments.reduce((result, shipment) => {
+    const region = shipment.destination || "Unknown Region";
+    result[region] = (result[region] || 0) + 1;
+    return result;
+  }, {});
 
-//   const geographicalDistribution = Object.entries(distributionByRegion).map(
-//     ([region, shipmentsCount]) => ({
-//       region: region,
-//       shipmentsCount: shipmentsCount,
-//     })
-//   );
+  console.log(distributionByRegion);
 
-//   return geographicalDistribution;
-// };
+  const geographicalDistribution = Object.entries(distributionByRegion).map(
+    ([region, shipmentsCount]) => ({
+      region: region,
+      shipmentsCount: shipmentsCount,
+    })
+  );
+
+  return geographicalDistribution;
+};
 
 module.exports = {
   getStatusAnalysis,
   getDeliveryAnalysis,
+  calculateGeographicalDistribution,
 };

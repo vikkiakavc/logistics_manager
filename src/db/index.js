@@ -48,7 +48,7 @@ db.shipments.belongsTo(db.orders, { foreignKey: "orderId" });
 db.users.hasMany(db.reports, { foreignKey: "generatedBy" });
 db.reports.belongsTo(db.users, { foreignKey: "generatedBy" });
 
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync({ force: false }).then(() => {
   console.log(" yes re-sync");
 });
 

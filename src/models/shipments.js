@@ -37,8 +37,10 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   Shipments.beforeCreate(async (shipment, option) => {
-    shipment.currentLocation = shipment.currentLocation.trim().toLowerCase();
     shipment.destination = shipment.destination.trim().toLowerCase();
+  });
+  Shipments.beforeUpdate(async (shipment, option) => {
+    shipment.currentLocation = shipment.currentLocation.trim().toLowerCase();
   });
   return Shipments;
 };

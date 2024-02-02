@@ -1,7 +1,7 @@
 const db = require("../db/index");
 const Users = db.users;
 
-// register a new manager
+// register a new user
 const addManager = async (req, res) => {
   try {
     // console.log("heyyy");
@@ -9,6 +9,7 @@ const addManager = async (req, res) => {
     // console.log("AgainCount", existingUsersCount);
     if (existingUsersCount > 0) {
       const user = req.user;
+
       if (!user || user.getDataValue("role") !== "Manager") {
         return res
           .status(401)
@@ -73,27 +74,6 @@ const logoutAll = async (req, res) => {
   }
 };
 
-// delete manager
-const deleteManager = async (req, res) => {
-  try {
-    const user = req.user;
-    // console.log(user.getDataValue("role"));
-    if (user.getDataValue("role") !== "Manager") {
-      return res
-        .status(401)
-        .send({ error: "Please authenticate as a manager!" });
-    }
-
-    // Delete the manager
-    await user.destroy();
-
-    res.status(204).send({ deletedUser: user });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
 // get manger profile
 const getProfile = async (req, res) => {
   try {
@@ -105,28 +85,8 @@ const getProfile = async (req, res) => {
   }
 };
 
-// register a new staff
-const addStaff = async (req, res) => {
-  try {
-    const user = req.user;
-    if (!user || user.getDataValue("role") !== "Manager") {
-      return res
-        .status(401)
-        .send({ error: "Please authenticate as a manager!" });
-    }
-    const newUser = await Users.create(req.body);
-    const token = await newUser.generateAuthToken();
-    res
-      .status(201)
-      .send({ message: "user added successfully", newUser, token });
-  } catch (e) {
-    console.log(e);
-    res.status(404).send({ error: "Internal server error!" });
-  }
-};
-
-// delete staff
-const deleteStaff = async (req, res) => {
+// delete user
+const deleteUser = async (req, res) => {
   try {
     const user = req.user;
     if (user.getDataValue("role") !== "Manager") {
@@ -134,12 +94,12 @@ const deleteStaff = async (req, res) => {
         .status(401)
         .send({ error: "Please authenticate as a manager!" });
     }
-    const staff = await Users.findOne({ where: { id: req.params.id } });
+    const userToDelete = await Users.findOne({ where: { id: req.params.id } });
 
-    // Delete the staff
-    await staff.destroy();
+    // Delete the user
+    await userToDelete.destroy();
 
-    res.status(204).send({ deletedUser: user });
+    res.status(204).send({ deletedUser: userToDelete });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Internal Server Error" });
@@ -151,8 +111,6 @@ module.exports = {
   login,
   logout,
   logoutAll,
-  deleteManager,
   getProfile,
-  addStaff,
-  deleteStaff,
+  deleteUser,
 };

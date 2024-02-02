@@ -1,5 +1,34 @@
 const db = require("../db/index");
 const Shipment = db.shipments;
+const Orders = db.orders;
+
+// Endpoint to create an order
+const createOrder = async (req, res) => {
+  try {
+    const user = req.user;
+    if (user.getDataValue("role") !== "Manager") {
+      return res
+        .status(401)
+        .send({ error: "Please authenticate as a manager!" });
+    }
+    const { order_date, totalValue } = req.body;
+    console.log(order_date);
+    console.log(totalValue);
+    let orderDate = new Date(order_date);
+
+    // Create the order
+    const newOrder = await Orders.create({
+      userId: user.id,
+      orderDate,
+      totalValue,
+    });
+
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const addShipment = async (req, res) => {
   try {
@@ -32,7 +61,10 @@ const statusUpdate = async (req, res) => {
     if (!isValidOperation) {
       return res.status(400).json({ error: "Invalid updates!" });
     }
+    // console.log("------------------");
+    // console.log(req.body);
     const shipment = await Shipment.findOne({ where: { id: req.params.id } });
+    // console.log(shipment);
     updates.forEach((update) => (shipment[update] = req.body[update]));
     await shipment.save();
     res.status(200).send(shipment);
@@ -43,6 +75,7 @@ const statusUpdate = async (req, res) => {
 };
 
 module.exports = {
+  createOrder,
   addShipment,
   statusUpdate,
 };

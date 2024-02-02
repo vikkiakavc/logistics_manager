@@ -65,7 +65,7 @@ const calculateTurnoverRates = (inventoryItems) => {
   // Calculate turnover rates for each item
   const turnoverRates = inventoryItems.map((item) => {
     const turnoverRate = item.quantity !== 0 ? item.quantity / item.price : 0;
-    return { itemName: item.item_name, rate: turnoverRate };
+    return { itemName: item.name, rate: turnoverRate };
   });
 
   // Sort the turnoverRates array by rate in descending order

@@ -104,7 +104,10 @@ module.exports = (sequelize, DataTypes) => {
   Users.prototype.generateAuthToken = async function () {
     const user = this;
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "6h",
+    });
+
     const existingTokens = user.getDataValue("tokens");
 
     existingTokens.push({ token });

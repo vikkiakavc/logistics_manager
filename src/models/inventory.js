@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allownull: false,
+      unique: true,
     },
     quantity: {
       type: DataTypes.INTEGER,
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   Inventory.beforeCreate(async (item, option) => {
-    item.supplier = item.supplier.trim().toLowerCase();
+    item.supplier = item.supplier.trim();
   });
   return Inventory;
 };
