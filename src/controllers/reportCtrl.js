@@ -114,18 +114,14 @@ const shipmentReport = async (req, res) => {
     let filters = {};
 
     // Applying filters for shipmentDate
-    if (startDate && endDate) {
-      filters.shipmentDate = {
-        [Op.between]: [startDate, endDate],
-      };
-    } else if (startDate) {
-      filters.shipmentDate = {
-        [Op.gte]: startDate,
-      };
-    } else if (endDate) {
-      filters.shipmentDate = {
-        [Op.lte]: endDate,
-      };
+    if (startDate || endDate) {
+      filters.shipmentDate = {};
+      if (startDate) {
+        filters.shipmentDate[Op.gte] = startDate;
+      }
+      if (endDate) {
+        filters.shipmentDate[Op.lte] = endDate;
+      }
     }
 
     // Applying filter by status
